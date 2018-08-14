@@ -43,8 +43,17 @@ float determ(float a[4][4],int n) {
     }
 }
 
-
-Sphere calcSphere(Point* SPoints)
+// solve:
+//    | ( x^2 +  y^2 +  z^2)  x   y   z   1  |
+//    |                                      |
+//    | (x1^2 + y1^2 + z1^2)  x1  y1  z1  1  |
+//    |                                      |
+//    | (x2^2 + y2^2 + z2^2)  x2  y2  z2  1  | = 0
+//    |                                      |
+//    | (x3^2 + y3^2 + z3^2)  x3  y3  z3  1  |
+//    |                                      |
+//    | (x4^2 + y4^2 + z4^2)  x4  y4  z4  1  |
+Sphere* calcSphere(Point* SPoints)
 {
     float t[4][4] = {{SPoints[0].x,SPoints[0].y,SPoints[0].z,1},
                      {SPoints[1].x,SPoints[1].y,SPoints[1].z,1},
@@ -76,11 +85,11 @@ Sphere calcSphere(Point* SPoints)
                      {SPoints[3].x,SPoints[3].y,SPoints[3].z,-SPoints[3].x*SPoints[3].x+SPoints[0].y*SPoints[3].y+SPoints[3].z*SPoints[3].z}};
     float G = determ(g,4)/T;
 
-    Sphere S;
-    S.p.x = -D/2;
-    S.p.y = -E/2;
-    S.p.z = -F/2;
-    S.r = 1/2*sqrtf(D*D+E*E+F*F-4G);
+    Sphere* S;
+    S->p.x = -D/2;
+    S->p.y = -E/2;
+    S->p.z = -F/2;
+    S->r = 1/2*sqrtf(D*D+E*E+F*F-4*G);
     return S;
 }
 
@@ -123,7 +132,11 @@ Sphere* sed(const Point* points, Point* sPoints, uint32_t numPoints, uint32_t nu
         }
         else if (numSPoints == 3)
         {
-            //circle
+            //circle;
+        }
+        else if (numSPoints == 4)
+        {
+            S = calcSphere(sPoints);
         }
     }
 }
