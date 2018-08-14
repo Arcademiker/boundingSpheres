@@ -2,7 +2,7 @@
 #include <cmath> // for calculating square root and pow nothing else. I hope that was allowed.
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
-
+using namespace std;
 
 struct Point
 {
