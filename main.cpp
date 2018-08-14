@@ -221,11 +221,11 @@ Point midpoint(Point p0, Point p1)
     return p;
 }
 
-Sphere sed(const Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints)
+Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, int expPoint, float sphereSize)
 {
     Sphere S;
 
-    if(numPoints == 0 || numSPoints >= 4)
+    if(numPoints == 0 || numSPoints >= 3)
     {
         if (numSPoints == 1)
         {
@@ -281,7 +281,7 @@ Sphere sed(const Point* points, Point* sPoints, uint32_t numPoints, uint32_t num
                 newPoints[i] = points[i + 1];
             }
         }
-        Sphere D = sed(newPoints, sPoints, numPoints - 1, numSPoints);
+        Sphere D = sed(newPoints, sPoints, numPoints - 1, numSPoints, expPoint, D.r);
         // is point p in sphere D?
         if (D.exist && distance(points[p], D.p) <= D.r)
         {
@@ -302,7 +302,22 @@ Sphere sed(const Point* points, Point* sPoints, uint32_t numPoints, uint32_t num
                 newSPoints[i+1] = sPoints[i];
             }
         }
-        return sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1);
+
+
+        D = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, expPoint, D.r);
+        if(D.exist && D.r < sphereSize)
+        {
+            return D;
+        }
+        else {
+            Point subPoints[2];
+            subPoints[0] = points[p];
+            subPoints[1] = sPoints[expPoint];
+            expPoint = 0; // point of the last expansion
+            return sed(newPoints, subPoints, numPoints - 1, 2, expPoint, D.r);
+        }
+
+
     }
     return S; //undefined
 }
@@ -319,7 +334,7 @@ Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
         {
             pointSet[i] = points[i];
         }
-        result = sed(points,sPoints,numPoints,0);
+        result = sed(pointSet,sPoints,numPoints,0,0,0);
     }
     return result;
 }
@@ -336,7 +351,7 @@ int main()
     points[1].y=1;
     points[1].z=1;
 
-    points[2].x=40;
+    points[2].x=4;
     points[2].y=2;
     points[2].z=1;
 
@@ -365,7 +380,7 @@ int main()
     points[8].z=-9;
 
     points[9].x=-14;
-    points[9].y=15;
+    points[9].y=9;
     points[9].z=5;
     Sphere result = calculateBoundingSphere(points,10);
 
