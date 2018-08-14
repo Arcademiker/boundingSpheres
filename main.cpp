@@ -128,6 +128,7 @@ Sphere calcCircle(Point* SPoints)
         std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) << std::endl;
         std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) << std::endl;
         std::cout << "radius: " << S.r << std::endl;
+        std::cout << ">>>>plane test: 0? " << a*S.p.x+b*S.p.y+c*S.p.z+n << std::endl;
     }
     else
     {
