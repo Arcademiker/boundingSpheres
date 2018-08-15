@@ -414,7 +414,7 @@ int main()
     points[4].y=11;
     points[4].z=9;
 
-    points[5].x=11;
+    points[5].x=110;
     points[5].y=7;
     points[5].z=2;
 
