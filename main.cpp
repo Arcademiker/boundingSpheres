@@ -93,27 +93,27 @@ Sphere calcCircle(Point* SPoints)
     if (T!=0)
     {
         float d[4][4] = {{-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].y,SPoints[0].z,1},
-                         {-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].y,SPoints[1].z,1},
-                         {-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].y,SPoints[2].z,1},
-                         {0, b, c, n}};
+                         {-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].y,SPoints[1].z,1},
+                         {-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].y,SPoints[2].z,1},
+                         {(-a+b+c), b, c, n}};
         float D = determ(d,4)/T;
 
         float e[4][4] = {{SPoints[0].x,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].z,1},
-                         {SPoints[1].x,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].z,1},
-                         {SPoints[2].x,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].z,1},
-                         {0, a, c, n}};
+                         {SPoints[1].x,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].z,1},
+                         {SPoints[2].x,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].z,1},
+                         {-(a+b+c), a, c, n}};
         float E = determ(e,4)/T;
 
         float f[4][4] = {{SPoints[0].x,SPoints[0].y,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),1},
-                         {SPoints[1].x,SPoints[1].y,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),1},
-                         {SPoints[2].x,SPoints[2].y,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),1},
-                         {0, a, b, n}};
+                         {SPoints[1].x,SPoints[1].y,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),1},
+                         {SPoints[2].x,SPoints[2].y,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),1},
+                         {-(a+b+c), a, b, n}};
         float F = determ(f,4)/T;
 
         float g[4][4] = {{SPoints[0].x,SPoints[0].y,SPoints[0].z,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z)},
-                         {SPoints[1].x,SPoints[1].y,SPoints[1].z,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z)},
-                         {SPoints[2].x,SPoints[2].y,SPoints[2].z,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z)},
-                         {0, a, b, c}};
+                         {SPoints[1].x,SPoints[1].y,SPoints[1].z,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z)},
+                         {SPoints[2].x,SPoints[2].y,SPoints[2].z,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z)},
+                         {-(a+b+c), a, b, c}};
         float G = determ(g,4)/T;
 
         S.p.x = -D / 2.0f;
@@ -164,33 +164,33 @@ Sphere calcSphere(Point* SPoints)
     if (T!=0)
     {
         float d[4][4] = {{-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].y,SPoints[0].z,1},
-                         {-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].y,SPoints[1].z,1},
-                         {-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].y,SPoints[2].z,1},
-                         {-(SPoints[3].x*SPoints[3].x+SPoints[0].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),SPoints[3].y,SPoints[3].z,1}};
+                         {-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].y,SPoints[1].z,1},
+                         {-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].y,SPoints[2].z,1},
+                         {-(SPoints[3].x*SPoints[3].x+SPoints[3].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),SPoints[3].y,SPoints[3].z,1}};
         float D = determ(d,4)/T;
 
         float e[4][4] = {{SPoints[0].x,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].z,1},
-                         {SPoints[1].x,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].z,1},
-                         {SPoints[2].x,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].z,1},
-                         {SPoints[3].x,-(SPoints[3].x*SPoints[3].x+SPoints[0].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),SPoints[3].z,1}};
+                         {SPoints[1].x,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].z,1},
+                         {SPoints[2].x,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].z,1},
+                         {SPoints[3].x,-(SPoints[3].x*SPoints[3].x+SPoints[3].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),SPoints[3].z,1}};
         float E = determ(e,4)/T;
 
         float f[4][4] = {{SPoints[0].x,SPoints[0].y,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),1},
-                         {SPoints[1].x,SPoints[1].y,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),1},
-                         {SPoints[2].x,SPoints[2].y,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),1},
-                         {SPoints[3].x,SPoints[3].y,-(SPoints[3].x*SPoints[3].x+SPoints[0].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),1}};
+                         {SPoints[1].x,SPoints[1].y,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),1},
+                         {SPoints[2].x,SPoints[2].y,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),1},
+                         {SPoints[3].x,SPoints[3].y,-(SPoints[3].x*SPoints[3].x+SPoints[3].y*SPoints[3].y+SPoints[3].z*SPoints[3].z),1}};
         float F = determ(f,4)/T;
 
         float g[4][4] = {{SPoints[0].x,SPoints[0].y,SPoints[0].z,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z)},
-                         {SPoints[1].x,SPoints[1].y,SPoints[1].z,-(SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[1].y+SPoints[1].z*SPoints[1].z)},
-                         {SPoints[2].x,SPoints[2].y,SPoints[2].z,-(SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[2].y+SPoints[2].z*SPoints[2].z)},
-                         {SPoints[3].x,SPoints[3].y,SPoints[3].z,-(SPoints[3].x*SPoints[3].x+SPoints[0].y*SPoints[3].y+SPoints[3].z*SPoints[3].z)}};
+                         {SPoints[1].x,SPoints[1].y,SPoints[1].z,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z)},
+                         {SPoints[2].x,SPoints[2].y,SPoints[2].z,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z)},
+                         {SPoints[3].x,SPoints[3].y,SPoints[3].z,-(SPoints[3].x*SPoints[3].x+SPoints[3].y*SPoints[3].y+SPoints[3].z*SPoints[3].z)}};
         float G = determ(g,4)/T;
 
         S.p.x = -D / 2.0f;
         S.p.y = -E / 2.0f;
         S.p.z = -F / 2.0f;
-        S.r = 1.0f / 2.0f * sqrtf(D * D + E * E + F * F - 4.0f * G);
+        S.r = 1.0f/2.0f * sqrtf(D * D + E * E + F * F - 4.0f * G);
 
         S.exist= true;
 
@@ -252,6 +252,12 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
         }
         else if (numSPoints == 3)
         {
+            //Point a;
+            //a.x = 0;
+            //a.y = 0;
+            //a.z = 0;
+            //sPoints[3] = a;
+            //S = calcSphere(sPoints);
             S = calcCircle(sPoints);
             return S;
         }
@@ -414,7 +420,7 @@ int main()
     points[4].y=11;
     points[4].z=9;
 
-    points[5].x=110;
+    points[5].x=11;
     points[5].y=7;
     points[5].z=2;
 
