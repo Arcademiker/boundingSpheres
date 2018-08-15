@@ -7,6 +7,34 @@ using namespace std;
 struct Point
 {
     float x, y, z;
+
+    Point operator-(Point subP){
+        Point retP;
+        retP.x = subP.x-this->x;
+        retP.y = subP.y-this->y;
+        retP.z = subP.z-this->z;
+        return retP;
+    }
+    Point operator+(Point subP){
+        Point retP;
+        retP.x = subP.x+this->x;
+        retP.y = subP.y+this->y;
+        retP.z = subP.z+this->z;
+        return retP;
+    }
+    float operator*(Point subP){
+        float x = subP.x*this->x;
+        float y = subP.y*this->y;
+        float z = subP.z*this->z;
+        return x+y+z;
+    }
+    Point operator*(float scalar){
+        Point retP;
+        retP.x = scalar*this->x;
+        retP.y = scalar*this->y;
+        retP.z = scalar*this->z;
+        return retP;
+    }
 };
 
 struct Sphere
@@ -63,81 +91,47 @@ float distance(Point p0, Point p1)
     return sqrtf((p0.x-p1.x)*(p0.x-p1.x)+(p0.y-p1.y)*(p0.y-p1.y)+(p0.z-p1.z)*(p0.z-p1.z));
 }
 
-// solve:
-//
-//    | ( x^2 +  y^2 +  z^2)  x   y   z   1  |
-//    |                                      |
-//    | (x1^2 + y1^2 + z1^2)  x1  y1  z1  1  |
-//    |                                      |
-//    | (x2^2 + y2^2 + z2^2)  x2  y2  z2  1  | = 0
-//    |                                      |
-//    | (x3^2 + y3^2 + z3^2)  x3  y3  z3  1  |
-//    |                                      |
-//    | 0                     a   b   c   n  |  // plane where the three points lie in
+
+
 Sphere calcCircle(Point* SPoints)
 {
     Sphere S;
+
+    float Cx = SPoints[1].x-SPoints[0].x;
+    float Cy = SPoints[1].y-SPoints[0].y;
+    float Cz = SPoints[1].z-SPoints[0].z;
+    float Bx = SPoints[2].x-SPoints[0].x;
+    float By = SPoints[2].y-SPoints[0].y;
+    float Bz = SPoints[2].z-SPoints[0].z;
+    float B2 = SPoints[0].x*SPoints[0].x-SPoints[2].x*SPoints[2].x+SPoints[0].y*SPoints[0].y-SPoints[2].y*SPoints[2].y+SPoints[0].z*SPoints[0].z-SPoints[2].z*SPoints[2].z;
+    float C2 = SPoints[0].x*SPoints[0].x-SPoints[1].x*SPoints[1].x+SPoints[0].y*SPoints[0].y-SPoints[1].y*SPoints[1].y+SPoints[0].z*SPoints[0].z-SPoints[1].z*SPoints[1].z;
+
+    float CByz = Cy*Bz-Cz*By;
+    float CBxz = Cx*Bz-Cz*Bx;
+    float CBxy = Cx*By-Cy*Bx;
+    float ZZ1 = -(Bz-Cz*Bx/Cx)/(By-Cy*Bx/Cx);
+    float Z01 = -(B2-Bx/Cx*C2)/(2*(By-Cy*Bx/Cx));
+    float ZZ2 = -(ZZ1*Cy+Cz)/Cx;
+    float Z02 = -(2*Z01*Cy+C2)/(2*Cx);
+
+    S.p.z = -((Z02-SPoints[0].x)*CByz-(Z01-SPoints[0].y)*CBxz-SPoints[0].z*CBxy)/(ZZ2*CByz-ZZ1*CBxz+CBxy);
+    S.p.x = ZZ2*S.p.z + Z02;
+    S.p.y = ZZ1*S.p.z + Z01;
+
+    S.r = distance(S.p,SPoints[0]);
+
+    std::cout << "circle center: " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
+    std::cout << "with point0: " << SPoints[0].x << " " << SPoints[0].y << " " << SPoints[0].z << " distance: " << distance(S.p, SPoints[0] ) << std::endl;
+    std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) << std::endl;
+    std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) << std::endl;
+    std::cout << "radius: " << S.r << std::endl;
     // the plane of the three point:
     float a = (SPoints[1].y-SPoints[0].y)*(SPoints[2].z-SPoints[0].z)-(SPoints[2].y-SPoints[0].y)*(SPoints[1].z-SPoints[0].z);
     float b = (SPoints[1].z-SPoints[0].z)*(SPoints[2].x-SPoints[0].x)-(SPoints[2].z-SPoints[0].z)*(SPoints[1].x-SPoints[0].x);
     float c = (SPoints[1].x-SPoints[0].x)*(SPoints[2].y-SPoints[0].y)-(SPoints[2].x-SPoints[0].x)*(SPoints[1].y-SPoints[0].y);
-    float n = -(a*SPoints[0].x+b*SPoints[0].y+c*SPoints[0].z);
-    //std::cout << "plane test: 0?" << a*SPoints[1].x+b*SPoints[1].y+c*SPoints[1].z+n << std::endl;
+    float n = -(a*SPoints[1].x+b*SPoints[1].y+c*SPoints[1].z);
+    std::cout << ">>>>plane test: 0? " << a*S.p.x+b*S.p.y+c*S.p.z+n << std::endl << std::endl;
 
-
-    float t[4][4] = {{SPoints[0].x,SPoints[0].y,SPoints[0].z,1},
-                     {SPoints[1].x,SPoints[1].y,SPoints[1].z,1},
-                     {SPoints[2].x,SPoints[2].y,SPoints[2].z,1},
-                     {a, b, c, n}};
-    float T = determ(t,4);
-    if (T!=0)
-    {
-        float d[4][4] = {{-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].y,SPoints[0].z,1},
-                         {-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].y,SPoints[1].z,1},
-                         {-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].y,SPoints[2].z,1},
-                         {(-a+b+c), b, c, n}};
-        float D = determ(d,4)/T;
-
-        float e[4][4] = {{SPoints[0].x,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),SPoints[0].z,1},
-                         {SPoints[1].x,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),SPoints[1].z,1},
-                         {SPoints[2].x,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),SPoints[2].z,1},
-                         {-(a+b+c), a, c, n}};
-        float E = determ(e,4)/T;
-
-        float f[4][4] = {{SPoints[0].x,SPoints[0].y,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z),1},
-                         {SPoints[1].x,SPoints[1].y,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z),1},
-                         {SPoints[2].x,SPoints[2].y,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z),1},
-                         {-(a+b+c), a, b, n}};
-        float F = determ(f,4)/T;
-
-        float g[4][4] = {{SPoints[0].x,SPoints[0].y,SPoints[0].z,-(SPoints[0].x*SPoints[0].x+SPoints[0].y*SPoints[0].y+SPoints[0].z*SPoints[0].z)},
-                         {SPoints[1].x,SPoints[1].y,SPoints[1].z,-(SPoints[1].x*SPoints[1].x+SPoints[1].y*SPoints[1].y+SPoints[1].z*SPoints[1].z)},
-                         {SPoints[2].x,SPoints[2].y,SPoints[2].z,-(SPoints[2].x*SPoints[2].x+SPoints[2].y*SPoints[2].y+SPoints[2].z*SPoints[2].z)},
-                         {-(a+b+c), a, b, c}};
-        float G = determ(g,4)/T;
-
-        S.p.x = -D / 2.0f;
-        S.p.y = -E / 2.0f;
-        S.p.z = -F / 2.0f;
-        S.r = 1.0f / 2.0f * sqrtf(D * D + E * E + F * F - 4.0f * G);
-
-        S.exist= true;
-
-        std::cout << "circle center: " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-        std::cout << "with point0: " << SPoints[0].x << " " << SPoints[0].y << " " << SPoints[0].z << " distance: " << distance(S.p, SPoints[0] ) << std::endl;
-        std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) << std::endl;
-        std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) << std::endl;
-        std::cout << "radius: " << S.r << std::endl;
-        std::cout << ">>>>plane test: 0? " << a*S.p.x+b*S.p.y+c*S.p.z+n << std::endl;
-    }
-    else
-    {
-        S.p.x = 0.0f;
-        S.p.y = 0.0f;
-        S.p.z = 0.0f;
-        S.r = 0.0f;
-        S.exist= false;
-    }
     return S;
 }
 
@@ -199,7 +193,7 @@ Sphere calcSphere(Point* SPoints)
         std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) <<std::endl;
         std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) <<std::endl;
         std::cout << "with point3: " << SPoints[3].x << " " << SPoints[3].y << " " << SPoints[3].z << " distance: " << distance(S.p, SPoints[3] ) <<std::endl;
-        std::cout << "radius: " << S.r << std::endl;
+        std::cout << "radius: " << S.r << std::endl  << std::endl;
     }
     else
     {
@@ -234,7 +228,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             S.r = 0.0f;
             S.exist = true;
             std::cout << "sphere center (1): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-            std::cout << "radius: " << S.r << std::endl;
+            std::cout << "radius: " << S.r << std::endl << std::endl;
             return S;
         }
         else if (numSPoints == 2)
@@ -247,17 +241,11 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             S.r = diameter / 2.0f;
             S.exist = true;
             std::cout << "sphere center (2): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-            std::cout << "radius: " << S.r << std::endl;
+            std::cout << "radius: " << S.r << std::endl << std::endl;
             return S;
         }
         else if (numSPoints == 3)
         {
-            //Point a;
-            //a.x = 0;
-            //a.y = 0;
-            //a.z = 0;
-            //sPoints[3] = a;
-            //S = calcSphere(sPoints);
             S = calcCircle(sPoints);
             return S;
         }
@@ -285,7 +273,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             // is point p in sphere D?
             if (D.exist && distance(sPoints[p+opt], D.p) <= D.r)
             {
-                std::cout << "-----old sphere Point inside: " << D.r << " +++++ depth: "<< r << std::endl;
+                std::cout << "-----old sphere Point inside: " << D.r << " +++++ depth: "<< r << std::endl  << std::endl;
                 return D;
             }
 
@@ -328,7 +316,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             // is point p in sphere D?
             if (D.exist && distance(points[p], D.p) <= D.r)
             {
-                std::cout << "-----point inside: " << D.r << " +++++ depth: "<< r << std::endl;
+                std::cout << "-----point inside: " << D.r << " +++++ depth: "<< r << std::endl  << std::endl;
                 return D;
             }
 
@@ -349,7 +337,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 Sphere E = sed(points, newSPoints, numPoints, 2, newRadius, numSPoints, r++);
                 if(E.exist)
                 {
-                    std::cout << "-----smaller alternative: " << E.r << " +++++ depth: "<< r << std::endl;
+                    std::cout << "-----smaller alternative: " << E.r << " +++++ depth: "<< r << std::endl << std::endl;
                     return E;
                 }
             }
@@ -370,7 +358,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             else
             {
                 D = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, D.r, opt--, r++);
-                std::cout << "-----no alternative: " << D.r << " +++++ depth: "<< r << std::endl;
+                std::cout << "-----no alternative: " << D.r << " +++++ depth: "<< r << std::endl << std::endl;
                 return D;
             }
         }
@@ -420,7 +408,7 @@ int main()
     points[4].y=11;
     points[4].z=9;
 
-    points[5].x=11;
+    points[5].x=111;
     points[5].y=7;
     points[5].z=2;
 
