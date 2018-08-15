@@ -221,11 +221,11 @@ Point midpoint(Point p0, Point p1)
     return p;
 }
 
-Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, int expPoint, float sphereSize)
+Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, float sphereSize, int opt)
 {
     Sphere S;
 
-    if(numPoints == 0 || numSPoints >= 3)
+    if(numPoints == 0 || numSPoints >= 4)
     {
         if (numSPoints == 1)
         {
@@ -266,57 +266,102 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             return S; //undefined
         }
     }
-    if(numPoints > 0)
-    {
-        int p = rand() % numPoints;
-        Point newPoints[numPoints-1];
-        for (int i = 0; i < numPoints - 1; ++i)
+
+    if(numPoints > 0) {
+        int p;
+        Sphere D;
+        Point newPoints[numPoints - 1];
+        Point newSPoints[numSPoints + 1];
+        if (opt > 0 && numSPoints > opt)
         {
-            if (i < p)
+            p = rand() % (numSPoints-opt);
+            D = sed(points, sPoints, numPoints , numSPoints, sphereSize, opt--);
+            // is point p in sphere D?
+            if (D.exist && distance(sPoints[p+opt], D.p) <= D.r)
+            {
+                return D;
+            }
+
+            for (int i = 0; i < numPoints - 1; ++i)
             {
                 newPoints[i] = points[i];
             }
+
+            newSPoints[0] = sPoints[p];
+            for (int i = 0; i < numSPoints; ++i)
+            {
+                if (i < p)
+                {
+                    newSPoints[i + 1] = sPoints[i];
+                }
+                else
+                {
+                    newSPoints[i] = sPoints[i];
+                }
+            }
+
+        }
+        else
+        {
+
+            p = rand() % numPoints;
+            for (int i = 0; i < numPoints - 1; ++i)
+            {
+                if (i < p)
+                {
+                    newPoints[i] = points[i];
+                }
+                else
+                {
+                    newPoints[i] = points[i + 1];
+                }
+            }
+
+            D = sed(newPoints, sPoints, numPoints - 1, numSPoints, sphereSize, opt--);
+            // is point p in sphere D?
+            if (D.exist && distance(points[p], D.p) <= D.r)
+            {
+                return D;
+            }
+
+            newSPoints[0] = points[p];
+            for (int i = 0; i < numSPoints; ++i)
+            {
+                newSPoints[i + 1] = sPoints[i];
+            }
+
+        }
+
+        //looking for a smaller alternative
+        if(numSPoints > 2)
+        {
+            float newRadius = distance(sPoints[0],sPoints[1]);
+            if (newRadius < D.r && newRadius > sphereSize)
+            {
+                Sphere E = sed(points, newSPoints, numPoints, 2, newRadius, numSPoints);
+                if(E.exist)
+                {
+                    return E;
+                }
+            }
+
+        }
+        else
+        {
+            if(numSPoints > 4)
+            {
+                Sphere E = sed(points, newSPoints, numPoints, 2, sphereSize, numSPoints);
+                if(E.exist)
+                {
+                    return E;
+                }
+            }
             else
             {
-                newPoints[i] = points[i + 1];
+                D = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, D.r, opt--);
+                return D;
             }
         }
-        Sphere D = sed(newPoints, sPoints, numPoints - 1, numSPoints, expPoint, D.r);
-        // is point p in sphere D?
-        if (D.exist && distance(points[p], D.p) <= D.r)
-        {
-            return D;
-        }
-        Point newSPoints[numSPoints+1];
-        for (int i = 0; i < numSPoints; ++i)
-        {
-            if (i < p)
-            {
-                newSPoints[i] = sPoints[i];
-            }
-            else if (i == p)
-            {
-                newSPoints[i] = points[p];
-            }
-            if (i >= p){
-                newSPoints[i+1] = sPoints[i];
-            }
-        }
-
-
-        D = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, expPoint, D.r);
-        if(D.exist && D.r < sphereSize)
-        {
-            return D;
-        }
-        else {
-            Point subPoints[2];
-            subPoints[0] = points[p];
-            subPoints[1] = sPoints[expPoint];
-            expPoint = 0; // point of the last expansion
-            return sed(newPoints, subPoints, numPoints - 1, 2, expPoint, D.r);
-        }
-
 
     }
     return S; //undefined
