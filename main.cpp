@@ -110,9 +110,9 @@ Sphere calcCircle(Point* SPoints)
     float CBxz = Cx*Bz-Cz*Bx;
     float CBxy = Cx*By-Cy*Bx;
     float ZZ1 = -(Bz-Cz*Bx/Cx)/(By-Cy*Bx/Cx);
-    float Z01 = -(B2-Bx/Cx*C2)/(2*(By-Cy*Bx/Cx));
+    float Z01 = -(B2-Bx/Cx*C2)/(2.0f*(By-Cy*Bx/Cx));
     float ZZ2 = -(ZZ1*Cy+Cz)/Cx;
-    float Z02 = -(2*Z01*Cy+C2)/(2*Cx);
+    float Z02 = -(2.0f*Z01*Cy+C2)/(2.0f*Cx);
 
     S.p.z = -((Z02-SPoints[0].x)*CByz-(Z01-SPoints[0].y)*CBxz-SPoints[0].z*CBxy)/(ZZ2*CByz-ZZ1*CBxz+CBxy);
     S.p.x = ZZ2*S.p.z + Z02;
@@ -408,7 +408,7 @@ int main()
     points[4].y=11;
     points[4].z=9;
 
-    points[5].x=111;
+    points[5].x=11;
     points[5].y=7;
     points[5].z=2;
 
