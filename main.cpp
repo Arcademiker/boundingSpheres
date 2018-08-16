@@ -122,17 +122,20 @@ Sphere calcCircle(Point* SPoints)
 
     S.r = distance(S.p,SPoints[0]);
 
+
     std::cout << "circle center: " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
     std::cout << "with point0: " << SPoints[0].x << " " << SPoints[0].y << " " << SPoints[0].z << " distance: " << distance(S.p, SPoints[0] ) << std::endl;
     std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) << std::endl;
     std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) << std::endl;
     std::cout << "radius: " << S.r << std::endl;
+
     // the plane of the three point:
     float a = (SPoints[1].y-SPoints[0].y)*(SPoints[2].z-SPoints[0].z)-(SPoints[2].y-SPoints[0].y)*(SPoints[1].z-SPoints[0].z);
     float b = (SPoints[1].z-SPoints[0].z)*(SPoints[2].x-SPoints[0].x)-(SPoints[2].z-SPoints[0].z)*(SPoints[1].x-SPoints[0].x);
     float c = (SPoints[1].x-SPoints[0].x)*(SPoints[2].y-SPoints[0].y)-(SPoints[2].x-SPoints[0].x)*(SPoints[1].y-SPoints[0].y);
     float n = -(a*SPoints[1].x+b*SPoints[1].y+c*SPoints[1].z);
-    std::cout << ">>>>plane test: 0? " << a*S.p.x+b*S.p.y+c*S.p.z+n << std::endl << std::endl;
+    //std::cout << ">>>>plane test: 0? " << a*S.p.x+b*S.p.y+c*S.p.z+n << std::endl << std::endl;
+
 
     return S;
 }
@@ -190,12 +193,14 @@ Sphere calcSphere(Point* SPoints)
 
         S.exist= true;
 
+        /*
         std::cout << "sphere center: " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
         std::cout << "with point0: " << SPoints[0].x << " " << SPoints[0].y << " " << SPoints[0].z << " distance: " << distance(S.p, SPoints[0] ) <<std::endl;
         std::cout << "with point1: " << SPoints[1].x << " " << SPoints[1].y << " " << SPoints[1].z << " distance: " << distance(S.p, SPoints[1] ) <<std::endl;
         std::cout << "with point2: " << SPoints[2].x << " " << SPoints[2].y << " " << SPoints[2].z << " distance: " << distance(S.p, SPoints[2] ) <<std::endl;
         std::cout << "with point3: " << SPoints[3].x << " " << SPoints[3].y << " " << SPoints[3].z << " distance: " << distance(S.p, SPoints[3] ) <<std::endl;
         std::cout << "radius: " << S.r << std::endl  << std::endl;
+         */
     }
     else
     {
@@ -229,9 +234,9 @@ Sphere bound(Point* sPoints, int numSPoints)
         S.p = p0;
         S.r = 0.0f;
         S.exist = true;
-        std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
-        std::cout << "sphere center (1): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-        std::cout << "radius: " << S.r << std::endl << std::endl;
+        //std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
+        //std::cout << "sphere center (1): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
+        //std::cout << "radius: " << S.r << std::endl << std::endl;
         return S;
     }
     else if (numSPoints == 2)
@@ -243,10 +248,10 @@ Sphere bound(Point* sPoints, int numSPoints)
         S.p = center;
         S.r = diameter / 2.0f;
         S.exist = true;
-        std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
-        std::cout << "p1: (" << p1.x << "," << p1.y << "," << p1.z << ")" << std::endl;
-        std::cout << "SC: (" << S.p.x << ", " << S.p.y << ", " << S.p.z << ")" << std::endl;
-        std::cout << "radius: " << S.r << std::endl << std::endl;
+        //std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
+        //std::cout << "p1: (" << p1.x << "," << p1.y << "," << p1.z << ")" << std::endl;
+        //std::cout << "SC: (" << S.p.x << ", " << S.p.y << ", " << S.p.z << ")" << std::endl;
+        //std::cout << "radius: " << S.r << std::endl << std::endl;
         return S;
     }
     else if (numSPoints == 3)
@@ -268,9 +273,11 @@ Sphere bound(Point* sPoints, int numSPoints)
 }
 
 //bounding sphere algorithm
-Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, int inside, int r)
+Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, int inside, int r, Sphere* D)
 {
-    std::cout << "inside" << inside << std::endl;
+
+    std::cout << "Points to test: " << numPoints-inside << std::endl;
+
     for(int i = 0; i < numPoints ; ++i) {
         std::cout << "point " << i << ">> (" << points[i].x << "," << points[i].y << "," << points[i].z
                   << ")" << std::endl;
@@ -281,10 +288,10 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                   << ")" << std::endl;
     }
     std::cout << std::endl;
-    Sphere S;
+
     if(numPoints-inside > 0)
     {
-        Sphere D;
+        //Sphere D;
         Sphere E;
         Point newPoints[numPoints - 1];
         Point newSPoints[numSPoints + 1];
@@ -304,16 +311,16 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
 
         if(numSPoints > 0)
         {
-            D = bound(sPoints, numSPoints);
+            //D = bound(sPoints, numSPoints);
+
             // is point p in sphere D?
-            if (distance(points[p], D.p) <= D.r)
+            if (D->exist && distance(points[p], D->p) <= D->r)
             {
                 Point tmp = points[inside];
                 points[inside] = points[p];
                 points[p] = tmp;
-                std::cout << "depth: " << r << ", " << numSPoints << " rim, new point inside: " << "to test: "
-                          << numPoints-inside << " radius: " << D.r << std::endl << std::endl;
-                E = sed(points, sPoints, numPoints, numSPoints, ++inside, ++r);
+                //std::cout << "depth: " << r << ", " << numSPoints << " rim, new point inside: " << "to test: " << numPoints-inside << " radius: " << D.r << std::endl << std::endl;
+                E = sed(points, sPoints, numPoints, numSPoints, ++inside, ++r, D);
 
                 if(E.exist)
                 {
@@ -321,12 +328,13 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 }
                 else
                 {
-                    return D;
+                    return *D;
                 }
             }
         }
-
-
+        std::cout << "Pont " << p << " not inside (" << points[p].x << "," << points[p].y << "," << points[p].z << ")" << std::endl;
+        std::cout << "Sphere (" << D->p.x << "," << D->p.y << "," << D->p.z << ")" << std::endl;
+        std::cout << "radius " << D->r << std::endl;
         float tmpD;
         float maxD = 0;
         int pMax = 0;
@@ -341,29 +349,29 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 maxD = tmpD;
                 pMax = i;
             }
-            std::cout << "point " << i << ">> (" << newSPoints[i].x << "," << newSPoints[i].y << ","<< newSPoints[i].z << ")" << std::endl;
+            //std::cout << "point " << i << ">> (" << newSPoints[i].x << "," << newSPoints[i].y << ","<< newSPoints[i].z << ")" << std::endl;
         }
 
-        std::cout << "point " << numSPoints << ">> (" << newSPoints[numSPoints].x << "," << newSPoints[numSPoints].y << ","<< newSPoints[numSPoints].z << ")" << std::endl;
+        //std::cout << "point " << numSPoints << ">> (" << newSPoints[numSPoints].x << "," << newSPoints[numSPoints].y << ","<< newSPoints[numSPoints].z << ")" << std::endl;
         if(numSPoints > 0)
         {
             newSPoints[pMax + 1] = newSPoints[1];
             newSPoints[1] = sPoints[pMax];
-            std::cout << "old1 " << pMax + 1 << ">> (" << newSPoints[pMax + 1].x << "," << newSPoints[pMax + 1].y << ","<< newSPoints[pMax + 1].z << ")" << std::endl;
-            std::cout << "pmax " << 1 << ">> (" << newSPoints[1].x << "," << newSPoints[1].y << ","<< newSPoints[1].z << ")" << std::endl;
+            //std::cout << "old1 " << pMax + 1 << ">> (" << newSPoints[pMax + 1].x << "," << newSPoints[pMax + 1].y << ","<< newSPoints[pMax + 1].z << ")" << std::endl;
+            //std::cout << "pmax " << 1 << ">> (" << newSPoints[1].x << "," << newSPoints[1].y << ","<< newSPoints[1].z << ")" << std::endl;
         }
 
 
         if(numSPoints+1>1)
         {
-            D = bound(newSPoints, 2);
+            *D = bound(newSPoints, 2);
         }
         //inside with 2 points?
         bool oldSPin = true;
         bool oldSPin3 = false;
         for (int i = 2; i < numSPoints + 1; ++i)
         {
-            if (distance(newSPoints[i], D.p) > D.r)
+            if (distance(newSPoints[i], D->p) > D->r)
             {
                 oldSPin = false;
             }
@@ -376,10 +384,10 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             for(int i = 3; i < numSPoints +1; ++i)
             {
                 ///es fehlen alle 3er möglichkeiten zu testen
-                D = bound(newSPoints, 3);
+                *D = bound(newSPoints, 3);
                 for (int i = 3; i < numSPoints + 1; ++i)
                 {
-                    if (distance(newSPoints[i], D.p) > D.r)
+                    if (distance(newSPoints[i], D->p) > D->r)
                     {
                         oldSPin3 = false;
                         oldSPin = true;
@@ -402,25 +410,24 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 int newNumS = 2;
                 if (oldSPin3) {newNumS = 3;}
                 int resetsize = numPoints-1 + numSPoints+1 - newNumS;
-                std::cout << "points: " << resetsize << "numSP: " << numSPoints+1 << std::endl;
+                //std::cout << "points: " << resetsize << "numSP: " << numSPoints+1 << std::endl;
                 Point resetPoints[resetsize];
                 for (int i = 0; i < resetsize; ++i)
                 {
                     if (i < numPoints - 1)
                     {
                         resetPoints[i] = newPoints[i];
-                        std::cout << "point " << i << ">> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
+                        //std::cout << "point " << i << ">> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
                     }
                     else
                     {
                         resetPoints[i] = newSPoints[i - numPoints + newNumS+1];
-                        std::cout << "point " << i << " in sP " << i - numPoints + newNumS+1 << " >> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
+                        //std::cout << "point " << i << " in sP " << i - numPoints + newNumS+1 << " >> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
                     }
                 }
 
-                std::cout << "depth: " << r << ", 2 points rim: " << "to test: " << numPoints-inside << " radius: " << D.r
-                          << std::endl << std::endl;
-                E = sed(resetPoints, newSPoints, resetsize, newNumS, 0, ++r);
+                //std::cout << "depth: " << r << ", 2 points rim: " << "to test: " << numPoints-inside << " radius: " << D.r << std::endl << std::endl;
+                E = sed(resetPoints, newSPoints, resetsize, newNumS, 0, ++r, D);
 
 
                 if(E.exist)
@@ -429,20 +436,19 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 }
                 else
                 {
-                    return D;
+                    return *D;
                 }
             }
             else
             {
-                std::cout << "depth: " << r << ", II points rim: " << "to test: " << numPoints-inside << " radius: " << D.r
-                          << std::endl << std::endl;
+                //std::cout << "depth: " << r << ", II points rim: " << "to test: " << numPoints-inside << " radius: " << D.r << std::endl << std::endl;
                 if(oldSPin3)
                 {
-                    E = sed(newPoints, newSPoints, numPoints - 1, 3, 0, ++r);
+                    E = sed(newPoints, newSPoints, numPoints - 1, 3, 0, ++r, D);
                 }
                 else
                 {
-                    E = sed(newPoints, newSPoints, numPoints - 1, 2, 0, ++r);
+                    E = sed(newPoints, newSPoints, numPoints - 1, 2, 0, ++r, D);
                 }
 
 
@@ -452,29 +458,30 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 }
                 else
                 {
-                    return D;
+                    return *D;
                 }
             }
         }
         else
         {
-            D = bound(newSPoints,numSPoints + 1);
-            std::cout << "depth: "<< r << ", " << numSPoints+1 <<" points rim: " << "to test: " << numPoints-inside << " radius: " << D.r <<  std::endl  << std::endl;
-            E = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, 0, ++r);
+            *D = bound(newSPoints,numSPoints + 1);
+            //std::cout << "depth: "<< r << ", " << numSPoints+1 <<" points rim: " << "to test: " << numPoints-inside << " radius: " << D.r <<  std::endl  << std::endl;
+            E = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, 0, ++r, D);
             if(E.exist) {
                 return E;
             }
             else
             {
-                return D;
+                return *D;
             }
         }
 
 
 
     }
-    S.exist= false;
-    return S; //undefined
+    std::cout << "damn" << std::endl;
+    //D->exist= false;
+    return *D; //undefined
 }
 
 Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
@@ -489,7 +496,7 @@ Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
         {
             pointSet[i] = points[i];
         }
-        result = sed(pointSet,sPoints,numPoints,0,0,0);
+        result = sed(pointSet,sPoints,numPoints,0,0,0, &result);
     }
     return result;
 }
@@ -497,10 +504,10 @@ Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
 
 int main()
 {
-    Point points[10];
+    Point points[20];
     points[0].x=1;
-    points[0].y=3;
-    points[0].z=2;
+    points[0].y=5;
+    points[0].z=4;
 
     points[1].x=10;
     points[1].y=1;
@@ -535,16 +542,56 @@ int main()
     points[8].z=-9;
 
     points[9].x=-14;
-    points[9].y=10;
-    points[9].z=5;
-    Sphere result = calculateBoundingSphere(points,10);
+    points[9].y=-11;
+    points[9].z=-7;
 
-    std::cout << "bounding sphere center: " <<  result.p.x << " " <<  result.p.y << " " <<  result.p.z << std::endl;
-    std::cout << "radius: " <<  result.r << std::endl;
-    for(int i = 0; i < 10; ++i)
+    points[10].x=1;
+    points[10].y=3;
+    points[10].z=2;
+
+    points[11].x=10;
+    points[11].y=22;
+    points[11].z=11;
+
+    points[12].x=14;
+    points[12].y=2;
+    points[12].z=21;
+
+    points[13].x=16;
+    points[13].y=3;
+    points[13].z=14;
+
+    points[14].x=23;
+    points[14].y=11;
+    points[14].z=19;
+
+    points[15].x=11;
+    points[15].y=17;
+    points[15].z=12;
+
+    points[16].x=75;
+    points[16].y=-9;
+    points[16].z=29;
+
+    points[17].x=24.5;
+    points[17].y=121;
+    points[17].z=21;
+
+    points[18].x=1;
+    points[18].y=10;
+    points[18].z=19;
+
+    points[19].x=3;
+    points[19].y=24;
+    points[19].z=8;
+    Sphere result = calculateBoundingSphere(points,20);
+
+    std::cout << "bounding sphere center: " <<  "at Point ("<<result.p.x << "," <<  result.p.y << "," <<  result.p.z << ")" << std::endl;
+    std::cout << "with radius: " <<  result.r << std::endl;
+    for(int i = 0; i < 20; ++i)
     {
         std::cout << "point " << i << " is";
-        if(distance(points[i],result.p) <= result.r)
+        if(distance(points[i],result.p) < result.r+0.0001)
         {
             std::cout << " with distance " << distance(points[i],result.p) << "       inside with coordinates: " << points[i].x << " " << points[i].y << " " << points[i].z << std::endl;
         }
@@ -553,6 +600,11 @@ int main()
             std::cout << " with distance " << distance(points[i],result.p) << " !!NOT inside!! with coordinates: " << points[i].x << " " << points[i].y << " " << points[i].z << std::endl;
         }
     }
+    Point test[3];
+    test[0] = points[17];
+    test[1] = points[9];
+    test[2] = points[16];
+    calcCircle(test);
     return 0;
 }
 
