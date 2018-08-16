@@ -321,13 +321,17 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 maxD = tmpD;
                 pMax = i;
             }
+            std::cout << "point " << i << ">> (" << newSPoints[i].x << "," << newSPoints[i].y << ","<< newSPoints[i].z << ")" << std::endl;
         }
-
+        std::cout << "point " << numSPoints << ">> (" << newSPoints[numSPoints].x << "," << newSPoints[numSPoints].y << ","<< newSPoints[numSPoints].z << ")" << std::endl;
         if(numSPoints > 0)
         {
             newSPoints[pMax + 1] = newSPoints[1];
             newSPoints[1] = sPoints[pMax];
         }
+
+        std::cout << "old1 " << pMax + 1 << ">> (" << newSPoints[pMax + 1].x << "," << newSPoints[pMax + 1].y << ","<< newSPoints[pMax + 1].z << ")" << std::endl;
+        std::cout << "pmax " << 1 << ">> (" << newSPoints[1].x << "," << newSPoints[1].y << ","<< newSPoints[1].z << ")" << std::endl;
 
         D = bound(newSPoints,2);
         //else if(numSPoints+1 > 1)
@@ -339,7 +343,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
         bool oldSPin = true;
         for (int i = 2; i < numSPoints+1; ++i)
         {
-            if (distance(newSPoints[i], D.p)/2.0f > D.r)
+            if (distance(newSPoints[i], D.p) > D.r)
             {
                 oldSPin = false;
             }
@@ -354,7 +358,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 {
                     if (i < numPoints - 1)
                     {
-                        resetPoints[i] = points[i];
+                        resetPoints[i] = newPoints[i];
                         std::cout << "point " << i << ">> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
                     }
                     else
@@ -472,7 +476,7 @@ int main()
     points[8].z=-9;
 
     points[9].x=-14;
-    points[9].y=9;
+    points[9].y=10;
     points[9].z=5;
     Sphere result = calculateBoundingSphere(points,10);
 
