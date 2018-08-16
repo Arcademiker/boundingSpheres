@@ -355,12 +355,12 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                     if (i < numPoints - 1)
                     {
                         resetPoints[i] = points[i];
-                        std::cout << "point " << i << ">> x: " << resetPoints[i].x << " y: " << resetPoints[i].y << " z: "<< resetPoints[i].z << std::endl;
+                        std::cout << "point " << i << ">> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
                     }
                     else
                     {
                         resetPoints[i] = newSPoints[i - numPoints + 3];
-                        std::cout << "point " << i << " in sP " << i - numPoints + 3 << " >>x: " << resetPoints[i].x << " y: " << resetPoints[i].y << " z: "<< resetPoints[i].z << std::endl;
+                        std::cout << "point " << i << " in sP " << i - numPoints + 3 << " >> (" << resetPoints[i].x << "," << resetPoints[i].y << ","<< resetPoints[i].z << ")" << std::endl;
                     }
                 }
 
