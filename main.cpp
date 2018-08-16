@@ -215,155 +215,202 @@ Point midpoint(Point p0, Point p1)
     return p;
 }
 
-Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, float sphereSize, int opt, int r)
+Sphere bound(Point* sPoints, int numSPoints)
 {
     Sphere S;
 
-    if(numPoints == 0 || numSPoints >= 4)
+    if (numSPoints == 1)
     {
-        if (numSPoints == 1)
-        {
-            Point p0 = sPoints[0];
-            S.p = p0;
-            S.r = 0.0f;
-            S.exist = true;
-            std::cout << "sphere center (1): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-            std::cout << "radius: " << S.r << std::endl << std::endl;
-            return S;
-        }
-        else if (numSPoints == 2)
-        {
-            Point p0 = sPoints[0];
-            Point p1 = sPoints[1];
-            Point center = midpoint(p0,p1);
-            float diameter = distance(p0, p1);
-            S.p = center;
-            S.r = diameter / 2.0f;
-            S.exist = true;
-            std::cout << "sphere center (2): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
-            std::cout << "radius: " << S.r << std::endl << std::endl;
-            return S;
-        }
-        else if (numSPoints == 3)
-        {
-            S = calcCircle(sPoints);
-            return S;
-        }
-        else if(numSPoints == 4)
-        {
-            S = calcSphere(sPoints);
-            return S;
-        }
-        else
-        {
-            S.exist= false;
-            return S; //undefined
-        }
+        Point p0 = sPoints[0];
+        S.p = p0;
+        S.r = 0.0f;
+        S.exist = true;
+        std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
+        std::cout << "sphere center (1): " << S.p.x << " " << S.p.y << " " << S.p.z << std::endl;
+        std::cout << "radius: " << S.r << std::endl << std::endl;
+        return S;
+    }
+    else if (numSPoints == 2)
+    {
+        Point p0 = sPoints[0];
+        Point p1 = sPoints[1];
+        Point center = midpoint(p0,p1);
+        float diameter = distance(p0, p1);
+        S.p = center;
+        S.r = diameter / 2.0f;
+        S.exist = true;
+        std::cout << "p0: (" << p0.x << "," << p0.y << "," << p0.z << ")" << std::endl;
+        std::cout << "p1: (" << p1.x << "," << p1.y << "," << p1.z << ")" << std::endl;
+        std::cout << "SC: (" << S.p.x << ", " << S.p.y << ", " << S.p.z << ")" << std::endl;
+        std::cout << "radius: " << S.r << std::endl << std::endl;
+        return S;
+    }
+    else if (numSPoints == 3)
+    {
+        S = calcCircle(sPoints);
+        return S;
+    }
+    else if(numSPoints == 4)
+    {
+        S = calcSphere(sPoints);
+        return S;
+    }
+    else
+    {
+        S.exist= false;
+        return S; //undefined
     }
 
-    if(numPoints > 0) {
-        int p;
+}
+
+Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, float sphereSize, int r)
+{
+    Sphere S;
+    if(numPoints > 0)
+    {
         Sphere D;
+        Sphere E;
         Point newPoints[numPoints - 1];
         Point newSPoints[numSPoints + 1];
-        if (opt > 0 && numSPoints > opt)
-        {
-            p = rand() % (numSPoints-opt);
-            D = sed(points, sPoints, numPoints , numSPoints, sphereSize, opt--, r++);
-            // is point p in sphere D?
-            if (D.exist && distance(sPoints[p+opt], D.p) <= D.r)
-            {
-                std::cout << "-----old sphere Point inside: " << D.r << " +++++ depth: "<< r << std::endl  << std::endl;
-                return D;
-            }
+        int p = rand() % numPoints;
 
-            for (int i = 0; i < numPoints - 1; ++i)
+        for (int i = 0; i < numPoints - 1; ++i)
+        {
+            if (i < p)
             {
                 newPoints[i] = points[i];
             }
-
-            newSPoints[0] = sPoints[p];
-            for (int i = 0; i < numSPoints; ++i)
+            else
             {
-                if (i < p)
-                {
-                    newSPoints[i + 1] = sPoints[i];
-                }
-                else
-                {
-                    newSPoints[i] = sPoints[i];
-                }
+                newPoints[i] = points[i + 1];
             }
-
         }
-        else
+
+        if(numSPoints > 0)
         {
-
-            p = rand() % numPoints;
-            for (int i = 0; i < numPoints - 1; ++i)
-            {
-                if (i < p)
-                {
-                    newPoints[i] = points[i];
-                }
-                else
-                {
-                    newPoints[i] = points[i + 1];
-                }
-            }
-
-            D = sed(newPoints, sPoints, numPoints - 1, numSPoints, sphereSize, opt--, r++);
+            D = bound(sPoints, numSPoints);
             // is point p in sphere D?
-            if (D.exist && distance(points[p], D.p) <= D.r)
-            {
-                std::cout << "-----point inside: " << D.r << " +++++ depth: "<< r << std::endl  << std::endl;
-                return D;
-            }
+            if (distance(points[p], D.p) <= D.r) {
+                std::cout << "depth: " << r << ", " << numSPoints << " rim, new point inside: " << "to test: "
+                          << numPoints << " radius: " << D.r << std::endl << std::endl;
+                E = sed(newPoints, sPoints, numPoints - 1, numSPoints, sphereSize, ++r);
 
-            newSPoints[0] = points[p];
-            for (int i = 0; i < numSPoints; ++i)
-            {
-                newSPoints[i + 1] = sPoints[i];
-            }
-
-        }
-
-        //looking for a smaller alternative
-        if(numSPoints > 2)
-        {
-            float newRadius = distance(sPoints[0],sPoints[1]);
-            if (newRadius < D.r && newRadius > sphereSize)
-            {
-                Sphere E = sed(points, newSPoints, numPoints, 2, newRadius, numSPoints, r++);
-                if(E.exist)
-                {
-                    std::cout << "-----smaller alternative: " << E.r << " +++++ depth: "<< r << std::endl << std::endl;
+                if(E.exist) {
                     return E;
                 }
-            }
-
-        }
-        else
-        {
-            //reduce number of points on sphere
-            if(numSPoints > 4)
-            {
-                Sphere E = sed(points, newSPoints, numPoints, 2, sphereSize, numSPoints, r++);
-                if(E.exist)
+                else
                 {
-                    std::cout << "-----forced smaller alternative: " << E.r << " +++++ depth: "<< r << std::endl;
+                    return D;
+                }
+            }
+        }
+
+
+
+        float tmpD;
+        float maxD = 0;
+        int pMax = 0;
+
+        newSPoints[0] = points[p];
+        for (int i = 0; i < numSPoints; ++i)
+        {
+            newSPoints[i + 1] = sPoints[i];
+            tmpD = distance(sPoints[i], points[p]);
+            if (tmpD > maxD)
+            {
+                maxD = tmpD;
+                pMax = i;
+            }
+        }
+
+        if(numSPoints > 0)
+        {
+            newSPoints[pMax + 1] = newSPoints[1];
+            newSPoints[1] = sPoints[pMax];
+        }
+
+        D = bound(newSPoints,2);
+        //else if(numSPoints+1 > 1)
+        //{
+        //    D = sed(newPoints, newSPoints, numPoints - 1, 2, sphereSize, r++);
+        //}
+
+        //inside?
+        bool oldSPin = true;
+        for (int i = 2; i < numSPoints+1; ++i)
+        {
+            if (distance(newSPoints[i], D.p)/2.0f > D.r)
+            {
+                oldSPin = false;
+            }
+        }
+        if (oldSPin && numSPoints+1 > 1)
+        {
+            if(numSPoints+1 > 2)
+            {
+                std::cout << "points: " << numPoints + numSPoints+1 - 3 << "numSP: " << numSPoints+1 << std::endl;
+                Point resetPoints[numPoints + numSPoints+1 - 3];
+                for (int i = 0; i < numPoints + numSPoints+1 - 3; ++i)
+                {
+                    if (i < numPoints - 1)
+                    {
+                        resetPoints[i] = points[i];
+                        std::cout << "point " << i << ">> x: " << resetPoints[i].x << " y: " << resetPoints[i].y << " z: "<< resetPoints[i].z << std::endl;
+                    }
+                    else
+                    {
+                        resetPoints[i] = newSPoints[i - numPoints + 3];
+                        std::cout << "point " << i << " in sP " << i - numPoints + 3 << " >>x: " << resetPoints[i].x << " y: " << resetPoints[i].y << " z: "<< resetPoints[i].z << std::endl;
+                    }
+                }
+
+                std::cout << "depth: " << r << ", 2 points rim: " << "to test: " << numPoints << " radius: " << D.r
+                          << std::endl << std::endl;
+                E = sed(resetPoints, newSPoints, numPoints + numSPoints+1 - 3, 2, sphereSize, ++r);
+
+
+                if(E.exist) {
                     return E;
+                }
+                else
+                {
+                    return D;
                 }
             }
             else
             {
-                D = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, D.r, opt--, r++);
-                std::cout << "-----no alternative: " << D.r << " +++++ depth: "<< r << std::endl << std::endl;
+                std::cout << "depth: " << r << ", II points rim: " << "to test: " << numPoints << " radius: " << D.r
+                          << std::endl << std::endl;
+                E = sed(newPoints, newSPoints, numPoints - 1, 2, sphereSize, ++r);
+
+
+                if(E.exist) {
+                    return E;
+                }
+                else
+                {
+                    return D;
+                }
+            }
+        }
+        else
+        {
+            D = bound(newSPoints,numSPoints + 1);
+            std::cout << "depth: "<< r << ", " << numSPoints+1 <<" points rim: " << "to test: " << numPoints << " radius: " << D.r <<  std::endl  << std::endl;
+            E = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, sphereSize, ++r);
+            if(E.exist) {
+                return E;
+            }
+            else
+            {
                 return D;
             }
         }
 
+
+
     }
+    S.exist= false;
     return S; //undefined
 }
 
@@ -379,7 +426,7 @@ Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
         {
             pointSet[i] = points[i];
         }
-        result = sed(pointSet,sPoints,numPoints,0,0,0,0);
+        result = sed(pointSet,sPoints,numPoints,0,0,0);
     }
     return result;
 }
@@ -445,3 +492,4 @@ int main()
     }
     return 0;
 }
+
