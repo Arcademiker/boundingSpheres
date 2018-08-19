@@ -273,6 +273,36 @@ Sphere bound(Point* sPoints, int numSPoints)
 }
 
 //bounding sphere algorithm
+//
+//bound(Point* R)
+//create Sphere with 1, 2, 3 or 4 defining Points in set R
+//
+//-D: current Sphere  (E for experimental Sphere)
+//-P (ponits): Points to test
+//-R (sPonints): possibly Points candidate for Sphere creation
+//sed (Point* P, Point* R, int t, Sphere& D) {
+//if (R > 3)
+//  E = sed( P, R, 2, D) // recursive creation of experimental Sphere with two Points
+//  if (E smaller then D) // (D was created with 4 Point)
+//      D = E
+//else
+//  Point p = get random Point out of P
+//  if(p inside Sphere D)
+//      remove p from set P
+//      E = sed( P, R, t, D) // recursive creation of experimental Sphere with Points in R
+//      if (E.exist)
+//         return E
+//      else
+//         return D
+//  else
+//      add p to set of Points R
+//      D = bound( R ) // create Sphere with Points in set R
+//      E = sed( P, R, t+1, D) // recursive creation of experimental Sphere with Points in R + new Point p
+//      if (E.exist)
+//         return E
+//      else
+//         return D
+// }
 Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoints, int inside, int r, Sphere* D)
 {
 
