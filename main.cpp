@@ -2,7 +2,6 @@
 #include <cmath> // for calculating square root and pow
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
-using namespace std;
 
 // a struct to store 3D Points with the ability to perform basic mathematical vector operations
 struct Point
