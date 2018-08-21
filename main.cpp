@@ -1,9 +1,10 @@
 #include <iostream>
-#include <cmath> // for calculating square root and pow nothing else. I hope that was allowed.
+#include <cmath> // for calculating square root and pow
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 using namespace std;
 
+// a struct to store 3D Points with the ability to perform basic mathematical vector operations
 struct Point
 {
     float x, y, z;
@@ -44,7 +45,7 @@ struct Sphere
     bool exist;
 };
 
-// solve determinant
+// solves 4x4 determinant:
 float determ(float a[4][4],int n)
 {
     int  p, i, j, k, h ;
@@ -87,7 +88,7 @@ float determ(float a[4][4],int n)
     }
 }
 
-// calc Euclidean distance
+// calc Euclidean distance:
 float distance(Point p0, Point p1)
 {
     return sqrtf((p0.x-p1.x)*(p0.x-p1.x)+(p0.y-p1.y)*(p0.y-p1.y)+(p0.z-p1.z)*(p0.z-p1.z));
@@ -272,14 +273,11 @@ Sphere bound(Point* sPoints, int numSPoints)
 
 }
 
-//bounding sphere algorithm
-//
-//bound(Point* R)
-//create Sphere with 1, 2, 3 or 4 defining Points in set R
-//
 //-D: current Sphere  (E for experimental Sphere)
 //-P (ponits): Points to test
 //-R (sPonints): possibly Points candidate for Sphere creation
+//
+////bounding sphere algorithm
 //sed (Point* P, Point* R, int t, Sphere& D) {
 //if (R > 3)
 //  E = sed( P, R, 2, D) // recursive creation of experimental Sphere with two Points
@@ -387,13 +385,17 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
                 }
             }
         }
-        std::cout << "Pont " << p << " not inside (" << points[p].x << "," << points[p].y << "," << points[p].z << ")" << std::endl;
-        std::cout << "Sphere (" << D->p.x << "," << D->p.y << "," << D->p.z << ")" << std::endl;
-        std::cout << "radius " << D->r << std::endl;
+        // point p is not in sphere D!
+        
+        //std::cout << "Pont " << p << " not inside (" << points[p].x << "," << points[p].y << "," << points[p].z << ")" << std::endl;
+        //std::cout << "Sphere (" << D->p.x << "," << D->p.y << "," << D->p.z << ")" << std::endl;
+        //std::cout << "radius " << D->r << std::endl;
         float tmpD;
         float maxD = 0;
         int pMax = 0;
 
+        // add point p to sPoints
+        // find out which old sPoint has the maximum distance to p
         newSPoints[0] = points[p];
         for (int i = 0; i < numSPoints; ++i)
         {
@@ -408,6 +410,8 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
         }
 
         //std::cout << "point " << numSPoints << ">> (" << newSPoints[numSPoints].x << "," << newSPoints[numSPoints].y << ","<< newSPoints[numSPoints].z << ")" << std::endl;
+        
+        // place the point with the maximal distance to p at position 2 in the sPoint set
         if(numSPoints > 0)
         {
             newSPoints[pMax + 1] = newSPoints[1];
@@ -416,12 +420,11 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             //std::cout << "pmax " << 1 << ">> (" << newSPoints[1].x << "," << newSPoints[1].y << ","<< newSPoints[1].z << ")" << std::endl;
         }
 
-
+        // try to find Sphere which contains all sPoints (R) and is defined by p and the sPoint with maximum distance to p
         if(numSPoints+1>1)
         {
             *D = bound(newSPoints, 2);
         }
-        //inside with 2 points?
         bool oldSPin = true;
         bool oldSPin3 = false;
         for (int i = 2; i < numSPoints + 1; ++i)
@@ -432,10 +435,12 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             }
         }
 
-        //inside with 3 points?
+        // if D doesn't contain all sPoints,
+        // try to find Sphere which contains all sPoints (R) and is defined by p and two other points in sPoints
         if (!oldSPin && numSPoints+1 > 2)
         {
             oldSPin3 = true;
+            // try all combinations of p and 2 other points in sPoints
             for(int i = 2; i < numSPoints +1 ; ++i)
             {
                 if(i>2)
@@ -461,6 +466,9 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             }
         }
 
+        // if the solution p with one other Points in sPoints (R) works and we have more then one sPoints
+        // try to add other points in the set points (P) to the bounding Sphere and check if they are inside
+        // by calling this function sed(...) recursivly
         if (oldSPin && numSPoints+1 > 1)
         {
             if(numSPoints+1 > 2 && (!oldSPin3 || numSPoints+1 > 3))
@@ -499,6 +507,8 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
             }
             else
             {
+                // if a 3 Points solution for creating the bounding Sphere exists, then call sed(...) recursivly                
+                
                 //std::cout << "depth: " << r << ", II points rim: " << "to test: " << numPoints-inside << " radius: " << D.r << std::endl << std::endl;
                 if(oldSPin3)
                 {
@@ -522,6 +532,8 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
         }
         else
         {
+            // if all previosly branches fail, then create a Sphere
+            // with all current sPoints including Point P as Sphere defining Points
             *D = bound(newSPoints,numSPoints + 1);
             //std::cout << "depth: "<< r << ", " << numSPoints+1 <<" points rim: " << "to test: " << numPoints-inside << " radius: " << D.r <<  std::endl  << std::endl;
             E = sed(newPoints, newSPoints, numPoints - 1, numSPoints + 1, 0, ++r, D);
@@ -542,6 +554,7 @@ Sphere sed(Point* points, Point* sPoints, uint32_t numPoints, uint32_t numSPoint
     return *D; //undefined
 }
 
+// Interface for calling the recursive function sed(...)
 Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
 {
     Sphere result;
@@ -562,6 +575,7 @@ Sphere calculateBoundingSphere(const Point* points, uint32_t numPoints)
 
 int main()
 {
+    // add 20 3D Points to test the algorithm
     Point points[20];
     points[0].x=1;
     points[0].y=5;
